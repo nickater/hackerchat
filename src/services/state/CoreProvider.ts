@@ -1,5 +1,3 @@
-import { print } from '../../utils/log';
-
 export class CoreProvider {
   public static instance: CoreProvider = new CoreProvider();
   private _userId = '';
@@ -23,7 +21,6 @@ export class CoreProvider {
   }
 
   public quitApp = () => {
-    print('quitting app');
     this._isAppRunning = false;
   };
 

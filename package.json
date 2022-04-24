@@ -6,7 +6,9 @@
   "bin": "./bin/main.js",
   "scripts": {
     "start": "yarn build && node bin/main.js",
-    "build": "tsc",
+    "build": "tsc -p .",
+    "local": "npm i -g",
+    "make": "yarn build && yarn local",
     "start:dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/main.ts",
     "lint": "eslint . --fix"
   },
