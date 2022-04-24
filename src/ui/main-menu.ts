@@ -1,27 +1,30 @@
-import inquirer, { ListQuestion, Question } from 'inquirer';
-import Choices from 'inquirer/lib/objects/choices';
+import clear from 'clear';
+import inquirer, { ListQuestion } from 'inquirer';
 import { CoreProvider } from '../services/state/CoreProvider';
-import { chatView } from './chat';
+import { chatMenuView } from './chat/chat-menu';
 import { loginView } from './login';
 import { registerView } from './register';
 import { settingsView } from './settings';
+import { ViewResponseType } from './types';
 
 const choiceManager = () => {
-  let choices: string[] = [];
-  if (true) choices.push('chat');
-  if (true) choices.push('login');
-  if (true) choices.push('register');
-  if (true) choices.push('settings');
-  if (true) choices.push('logout');
+  const { isLoggedIn } = CoreProvider.instance;
+  const choices: string[] = [];
+  if (isLoggedIn) choices.push('chat');
+  if (!isLoggedIn) choices.push('login');
+  if (!isLoggedIn) choices.push('register');
+  choices.push('settings');
+  if (isLoggedIn) choices.push('logout');
+  choices.push('exit');
   return choices;
 };
 
-const mainMenuList: ListQuestion = {
+const mainMenuList = (): ListQuestion => ({
   name: 'destination',
   type: 'list',
   message: 'Main Menu',
   choices: choiceManager(),
-};
+});
 
 const exit = () => {
   const coreProvider = CoreProvider.instance;
@@ -33,14 +36,20 @@ const logout = () => {
 };
 
 export const mainMenu = async () => {
-  const { destination } = await inquirer.prompt<{ destination: string }>([mainMenuList]);
+  clear();
+  const { destination } = await inquirer.prompt<{ destination: string }>([mainMenuList()]);
   switch (destination) {
     case 'chat':
-      await chatView();
+      await chatMenuView();
       break;
-    case 'login':
-      await loginView();
+    case 'login': {
+      let loginSuccessful = false;
+      while (!loginSuccessful) {
+        const loginResponse = await loginView();
+        loginSuccessful = loginResponse.responseType === ViewResponseType.SUCCESS;
+      }
       break;
+    }
     case 'register':
       await registerView();
       break;

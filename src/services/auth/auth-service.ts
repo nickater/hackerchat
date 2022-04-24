@@ -1,15 +1,26 @@
 import { createUserWithEmailAndPassword, initializeAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { AuthCredentials } from './types';
 import { app } from '../../firebase';
-import { initializeUser } from '../db';
+import { initializeUser } from '../user-service';
+import { UserType } from '../../types';
 
 const auth = initializeAuth(app);
 
 export const registerUser = async ({ email, password }: AuthCredentials) => {
-  const { user } = await createUserWithEmailAndPassword(auth, email, password);
-  await initializeUser(user.uid, email);
+  try {
+    const response = await createUserWithEmailAndPassword(auth, email, password);
+    const newUser: UserType = { userId: response.user.uid, email };
+    await initializeUser(newUser);
+    return response;
+  } catch {
+    throw new Error('Registration unsuccessful. Try again.');
+  }
 };
 
 export const authenticateUser = async ({ email, password }: AuthCredentials) => {
-  return await signInWithEmailAndPassword(auth, email, password);
+  try {
+    return await signInWithEmailAndPassword(auth, email, password);
+  } catch {
+    throw new Error('Login unsuccessful. Try again.');
+  }
 };

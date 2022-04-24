@@ -1,13 +1,12 @@
 import { app } from '../firebase';
-import { collection, doc, getFirestore, setDoc } from 'firebase/firestore';
+import { collection, CollectionReference, DocumentData, getFirestore } from 'firebase/firestore';
+import { ChatType, UserType } from '../types';
 
 export const db = getFirestore(app);
 
-export const initializeUser = async (userId: string, email: string): Promise<void> => {
-  const collectionRef = collection(db, 'users');
-  const newUser = doc(db, `users/${userId}`);
-  return await setDoc(newUser, {
-    userId,
-    email,
-  });
+export const createCollection = <T = DocumentData>(collectionName: string) => {
+  return collection(db, collectionName) as CollectionReference<T>;
 };
+
+export const usersCollection = createCollection<UserType>('users');
+export const chatsCollection = createCollection<ChatType>('chats');

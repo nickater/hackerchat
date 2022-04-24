@@ -7,7 +7,8 @@
   "scripts": {
     "start": "yarn build && node bin/main.js",
     "build": "tsc",
-    "start:dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/main.ts"
+    "start:dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/main.ts",
+    "lint": "eslint . --fix"
   },
   "devDependencies": {
     "@types/clear": "^0.1.2",
@@ -27,6 +28,7 @@
     "clear": "^0.1.0",
     "commander": "^9.2.0",
     "firebase": "^9.6.11",
-    "inquirer": "^8.2.2"
+    "inquirer": "^8.2.2",
+    "rxjs": "^7.5.5"
   }
 }
