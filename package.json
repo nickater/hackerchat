@@ -1,0 +1,32 @@
+{
+  "name": "hackerchat",
+  "version": "1.0.0",
+  "main": "./src",
+  "license": "MIT",
+  "bin": "./bin/main.js",
+  "scripts": {
+    "start": "yarn build && node bin/main.js",
+    "build": "tsc",
+    "start:dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/main.ts"
+  },
+  "devDependencies": {
+    "@types/clear": "^0.1.2",
+    "@types/commander": "^2.12.2",
+    "@types/inquirer": "^8.2.1",
+    "@types/node": "^17.0.24",
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "eslint": "^8.13.0",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.7.0",
+    "tsc": "^2.0.4",
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "chalk": "^5.0.1",
+    "clear": "^0.1.0",
+    "commander": "^9.2.0",
+    "firebase": "^9.6.11",
+    "inquirer": "^8.2.2"
+  }
+}
