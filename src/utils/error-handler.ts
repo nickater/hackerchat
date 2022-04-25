@@ -1,8 +1,9 @@
+import { color } from './colors';
 import { print } from './log';
 
 export const handleError = (error: unknown) => {
 	if (error instanceof Error) {
-		print(error.message);
+		color.important(error.message);
 	} else {
 		print(error);
 	}

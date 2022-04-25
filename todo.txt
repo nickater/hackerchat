@@ -1,0 +1,1 @@
+Convert chat message of input to editor type. Check inquirer for "editor"

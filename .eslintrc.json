@@ -17,10 +17,6 @@
         "unused-imports"
     ],
     "rules": {
-        "indent": [
-            "error",
-            "tab"
-        ],
         "linebreak-style": [
             "error",
             "unix"
@@ -34,6 +30,12 @@
             "always"
         ],
         "comma-dangle": "off",
+        "no-empty": [
+            "error",
+            {
+                "allowEmptyCatch": true
+            }
+        ],
         "@typescript-eslint/no-unused-vars": "warn",
         "unused-imports/no-unused-imports": "error",
         "unused-imports/no-unused-vars": [

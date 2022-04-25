@@ -21,32 +21,38 @@ const chatMenuList = (): ListQuestion => ({
 });
 
 export const chatMenuView = async () => {
-	let chat;
-	clear();
-	const { destination } = await inquirer.prompt<{ destination: string }>([
-		chatMenuList()
-	]);
-	switch (destination) {
-	case 'new': {
-		const newChatResponse = await newChatView();
-		if (newChatResponse.responseType === ViewResponseType.SUCCESS) {
-			chat = newChatResponse.data;
+	let keepViewing = true;
+
+	while (keepViewing) {
+		let chat;
+		clear();
+		const { destination } = await inquirer.prompt<{ destination: string }>([
+			chatMenuList()
+		]);
+		switch (destination) {
+			case 'new': {
+				const newChatResponse = await newChatView();
+				if (newChatResponse.responseType === ViewResponseType.SUCCESS) {
+					chat = newChatResponse.data;
+				}
+				break;
+			}
+			case 'existing': {
+				const existingChatResponse = await existingChatsView();
+				if (existingChatResponse.responseType === ViewResponseType.SUCCESS) {
+					chat = existingChatResponse.data;
+				}
+				break;
+			}
+			case 'go back':
+				keepViewing = false;
+				break;
+			default:
+				break;
 		}
-		break;
-	}
-	case 'existing': {
-		const existingChatResponse = await existingChatsView();
-		if (existingChatResponse.responseType === ViewResponseType.SUCCESS) {
-			chat = existingChatResponse.data;
+		if (chat) {
+			await chatView(chat.chatId, chat.recipient);
 		}
-		break;
 	}
-	case 'go back':
-		break;
-	default:
-		break;
-	}
-	if (chat) {
-		await chatView(chat.chatId, chat.recipient);
-	}
+	keepViewing = true;
 };
