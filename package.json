@@ -29,6 +29,7 @@
     "chalk": "4.1.2",
     "clear": "^0.1.0",
     "commander": "^9.2.0",
+    "conf": "^10.1.2",
     "firebase": "^9.6.11",
     "inquirer": "^8.2.2",
     "rxjs": "^7.5.5"
