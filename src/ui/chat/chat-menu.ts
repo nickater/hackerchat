@@ -23,40 +23,31 @@ const chatMenuList = (): ListQuestion => ({
   choices: [new inquirer.Separator(), ...choiceManager()],
 });
 
-const goBackToMainMenu = () => {
-  shouldStillViewChatMenu = false;
-};
-
-// should be displayed in a while loop until user leaves
 export const chatMenuView = async () => {
   let chat;
   clear();
-  while (shouldStillViewChatMenu) {
-    const { destination } = await inquirer.prompt<{ destination: string }>([chatMenuList()]);
-    switch (destination) {
-      case 'new': {
-        const newChatResponse = await newChatView();
-        if (newChatResponse.responseType === ViewResponseType.SUCCESS) {
-          chat = newChatResponse.data;
-        }
-        break;
+  const { destination } = await inquirer.prompt<{ destination: string }>([chatMenuList()]);
+  switch (destination) {
+    case 'new': {
+      const newChatResponse = await newChatView();
+      if (newChatResponse.responseType === ViewResponseType.SUCCESS) {
+        chat = newChatResponse.data;
       }
-      case 'existing': {
-        const existingChatResponse = await existingChatsView();
-        if (existingChatResponse.responseType === ViewResponseType.SUCCESS) {
-          print('Navigate to chat window with');
-          chat = existingChatResponse.data;
-        }
-        break;
+      break;
+    }
+    case 'existing': {
+      const existingChatResponse = await existingChatsView();
+      if (existingChatResponse.responseType === ViewResponseType.SUCCESS) {
+        chat = existingChatResponse.data;
       }
-      case 'go back':
-        goBackToMainMenu();
-        break;
-      default:
-        break;
+      break;
     }
-    if (chat) {
-      await chatView(chat.chatId, chat.recipient);
-    }
+    case 'go back':
+      break;
+    default:
+      break;
+  }
+  if (chat) {
+    await chatView(chat.chatId, chat.recipient);
   }
 };

@@ -52,13 +52,14 @@ export const chatView = async (chatId: string, recipient: UserType) => {
     if (message === 'exit()') {
       stillChatting = false;
       clear();
+    } else {
+      await sendMessage({
+        senderId,
+        recipientId: recipient.userId,
+        content: message,
+        chatId,
+      });
     }
-    await sendMessage({
-      senderId,
-      recipientId: recipient.userId,
-      content: message,
-      chatId,
-    });
   }
   return unsub();
 };
