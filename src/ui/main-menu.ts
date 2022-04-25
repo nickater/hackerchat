@@ -1,7 +1,7 @@
 import clear from 'clear';
 import inquirer, { ListQuestion } from 'inquirer';
 import { CoreProvider } from '../services/state/CoreProvider';
-import { getId } from '../utils/hackerchatrc';
+import { clearHackerChatrcFile, getEmail, getId } from '../utils/hackerchatrc';
 import { chatMenuView } from './chat/chat-menu';
 import { loginView } from './login';
 import { registerView } from './register';
@@ -27,22 +27,30 @@ const mainMenuList = (): ListQuestion => ({
   choices: choiceManager(),
 });
 
+const attemptAutoLogin = async () => {
+  try {
+    const userId = await getId();
+    const email = await getEmail();
+    await CoreProvider.instance.setUserId(userId);
+    await CoreProvider.instance.setUserEmail(email);
+  } catch {
+    await clearHackerChatrcFile();
+  }
+};
+
 const exit = () => {
   const coreProvider = CoreProvider.instance;
   coreProvider.quitApp();
 };
 
-const logout = () => {
+const logout = async () => {
+  CoreProvider.instance.clearUserId();
+  await clearHackerChatrcFile();
   exit();
 };
 
 export const mainMenu = async () => {
-  try {
-    const userId = await getId();
-    if (userId) {
-      CoreProvider.instance.setUserId(userId);
-    }
-  } catch {}
+  await attemptAutoLogin();
   clear();
   const { destination } = await inquirer.prompt<{ destination: string }>([mainMenuList()]);
   switch (destination) {
@@ -64,7 +72,7 @@ export const mainMenu = async () => {
       await settingsView();
       break;
     case 'logout':
-      logout();
+      await logout();
       break;
     case 'exit':
       exit();

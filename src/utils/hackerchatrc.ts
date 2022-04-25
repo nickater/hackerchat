@@ -1,57 +1,26 @@
-import fs from 'fs/promises';
-import os from 'os';
-import { convertFileToObject } from './file-helper';
-
-const tokenFile = `${os.homedir()}/.hackerchatrc`;
+import Conf from 'conf';
+const persist = new Conf();
 
 export const clearHackerChatrcFile = async () => {
-  try {
-    return await fs.rm(tokenFile);
-  } catch {
-    // do nothing
-  }
+  persist.clear();
 };
 
-export const getEmail = async () => {
-  let file: string;
-  let email: string;
-  try {
-    file = await fs.readFile(tokenFile, { encoding: 'utf-8' });
-    const lines = file.split(/\r?\n/).filter((line) => line !== '');
-    const entity = convertFileToObject(lines);
-    email = entity.EMAIL;
-    return email;
-  } catch {
-    throw new Error('Cannot find email. Try logging in again.');
-  }
+export const getEmail = () => {
+  const email = persist.get<string>('email');
+  if (!email) throw new Error('No persisted email');
+  return email as string;
 };
 
-export const getId = async () => {
-  let file: string;
-  let id: string;
-  try {
-    file = await fs.readFile(tokenFile, { encoding: 'utf-8' });
-    const lines = file.split(/\r?\n/).filter((line) => line !== '');
-    const entity = convertFileToObject(lines);
-    id = entity.ID;
-    return id;
-  } catch {
-    throw new Error('No ID saved to file');
-  }
+export const getId = () => {
+  const id = persist.get('uid');
+  if (!id) throw new Error('No persisted email');
+  return id as string;
 };
 
-export const saveEmail = async (email: string) => {
-  try {
-    await fs.appendFile(tokenFile, `EMAIL=${email}\n`);
-  } catch (error) {
-    throw new Error('Save email unsuccessful.');
-  }
+export const saveEmail = (email: string) => {
+  return persist.set('email', email);
 };
 
 export const saveId = async (id: string) => {
-  try {
-    await fs.appendFile(tokenFile, `ID=${id}\n`);
-  } catch (error) {
-    throw new Error('Save ID unsuccessful.');
-  }
+  return persist.set('uid', id);
 };

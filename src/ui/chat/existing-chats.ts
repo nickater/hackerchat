@@ -5,6 +5,8 @@ import { searchForUserById } from '../../services/user-service';
 import { handleError } from '../../utils/error-handler';
 import { ViewResponse, ViewResponseType } from '../types';
 import { ChatTypeWithId, UserType } from '../../types';
+import { goBackChoice } from '../../utils/questions';
+import { clear } from 'console';
 
 interface MappedChatType {
   id: string;
@@ -43,29 +45,34 @@ const mapChats = async (chats: ChatTypeWithId[]): Promise<MappedChatType[]> => {
   return mappedChats;
 };
 
-export const existingChatsView = async (): Promise<ViewResponse> => {
+export const existingChatsView = async (): Promise<ViewResponse<{ chatId: string; recipient: UserType } | void>> => {
   try {
     const userId = CoreProvider.instance.userId;
     const chats = await getAllChatsForUser(userId);
+    if (chats.length === 0) throw new Error('No existing chats. Start a new one, ya dingus!');
     const mappedChats = await mapChats(chats);
 
     const list: ListQuestion = {
-      name: 'chatChoice',
+      name: 'chat',
       message: 'Existing Chats',
       choices: [
         new inquirer.Separator(),
         ...mappedChats.map((choice) => ({
           name: choice.otherUser.email,
           short: choice.otherUser.email,
-          value: choice.id,
+          value: { chatId: choice.id, recipient: choice.otherUser },
           disabled: false,
         })),
+        goBackChoice,
       ],
       type: 'list',
     };
-    const { chatChoice } = await inquirer.prompt([list]);
-
-    const response = new ViewResponse(ViewResponseType.SUCCESS, chatChoice);
+    const { chat } = await inquirer.prompt([list]);
+    if (chat === goBackChoice) {
+      clear();
+      return new ViewResponse(ViewResponseType.SUCCESS);
+    }
+    const response = new ViewResponse(ViewResponseType.SUCCESS, chat);
     return response;
   } catch (error) {
     handleError(error);

@@ -42,3 +42,5 @@ export const passwordQuestion: Question = {
   message: 'Enter your password: ',
   name: 'password',
 };
+
+export const goBackChoice = 'go back';

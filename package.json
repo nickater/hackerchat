@@ -1,6 +1,6 @@
 {
-  "name": "hackerchat",
-  "version": "1.0.0",
+  "name": "hackrchat",
+  "version": "1.2.0",
   "main": "./src",
   "license": "MIT",
   "bin": "./bin/main.js",
@@ -26,11 +26,15 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "chalk": "^5.0.1",
+    "chalk": "4.1.2",
     "clear": "^0.1.0",
     "commander": "^9.2.0",
+    "conf": "^10.1.2",
     "firebase": "^9.6.11",
     "inquirer": "^8.2.2",
     "rxjs": "^7.5.5"
-  }
+  },
+  "description": "A CLI tool for chatting with all of your hacker friends",
+  "repository": "https://github.com/nickater/hackerchat.git",
+  "author": "Nick Ater <nick@atercloud.com>"
 }

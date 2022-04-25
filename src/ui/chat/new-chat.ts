@@ -4,8 +4,9 @@ import { CoreProvider } from '../../services/state/CoreProvider';
 import { searchForUserByEmail } from '../../services/user-service';
 import { ViewResponse, ViewResponseType } from '../types';
 import { handleError } from '../../utils/error-handler';
+import { UserType } from '../../types';
 
-export const newChatView = async (): Promise<ViewResponse<string | void>> => {
+export const newChatView = async (): Promise<ViewResponse<{ chatId: string; recipient: UserType } | void>> => {
   const senderId = CoreProvider.instance.userId;
   try {
     const { newChatRecipientEmail } = await inquirer.prompt([
@@ -30,7 +31,10 @@ export const newChatView = async (): Promise<ViewResponse<string | void>> => {
       },
     ]);
     const newChatId = await initializeChat({ senderId, recipientId, content });
-    const response = new ViewResponse(ViewResponseType.SUCCESS, newChatId);
+    const response = new ViewResponse(ViewResponseType.SUCCESS, {
+      chatId: newChatId,
+      recipient: { userId: recipientId, email: newChatRecipientEmail },
+    });
     return response;
   } catch (error) {
     handleError(error);
