@@ -6,39 +6,43 @@ import { ViewResponse, ViewResponseType } from '../types';
 import { handleError } from '../../utils/error-handler';
 import { UserType } from '../../types';
 
-export const newChatView = async (): Promise<ViewResponse<{ chatId: string; recipient: UserType } | void>> => {
-  const senderId = CoreProvider.instance.userId;
-  try {
-    const { newChatRecipientEmail } = await inquirer.prompt([
-      {
-        name: 'newChatRecipientEmail',
-        message: 'Recipient Email: ',
-        type: 'input',
-      },
-    ]);
+export const newChatView = async (): Promise<
+  ViewResponse<{ chatId: string; recipient: UserType } | void>
+> => {
+	const senderId = CoreProvider.instance.userId;
+	try {
+		const { newChatRecipientEmail } = await inquirer.prompt([
+			{
+				name: 'newChatRecipientEmail',
+				message: 'Recipient Email: ',
+				type: 'input'
+			}
+		]);
 
-    const { userId: recipientId } = await searchForUserByEmail(newChatRecipientEmail);
-    const chatId = await findChat({ senderId, recipientId }, false);
-    if (chatId) {
-      throw new Error('Chat already exists. Navigate to existing chats.');
-    }
+		const { userId: recipientId } = await searchForUserByEmail(
+			newChatRecipientEmail
+		);
+		const chatId = await findChat({ senderId, recipientId }, false);
+		if (chatId) {
+			throw new Error('Chat already exists. Navigate to existing chats.');
+		}
 
-    const { content } = await inquirer.prompt([
-      {
-        name: 'content',
-        message: 'Message:',
-        type: 'input',
-      },
-    ]);
-    const newChatId = await initializeChat({ senderId, recipientId, content });
-    const response = new ViewResponse(ViewResponseType.SUCCESS, {
-      chatId: newChatId,
-      recipient: { userId: recipientId, email: newChatRecipientEmail },
-    });
-    return response;
-  } catch (error) {
-    handleError(error);
-    const response = new ViewResponse(ViewResponseType.FAIL);
-    return response;
-  }
+		const { content } = await inquirer.prompt([
+			{
+				name: 'content',
+				message: 'Message:',
+				type: 'input'
+			}
+		]);
+		const newChatId = await initializeChat({ senderId, recipientId, content });
+		const response = new ViewResponse(ViewResponseType.SUCCESS, {
+			chatId: newChatId,
+			recipient: { userId: recipientId, email: newChatRecipientEmail }
+		});
+		return response;
+	} catch (error) {
+		handleError(error);
+		const response = new ViewResponse(ViewResponseType.FAIL);
+		return response;
+	}
 };

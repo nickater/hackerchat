@@ -8,11 +8,11 @@ const coreProvider = CoreProvider.instance;
 const exit = () => process.exit();
 
 const start = async () => {
-  clear();
-  while (coreProvider.isAppRunning) {
-    await mainMenu();
-  }
-  exit();
+	clear();
+	while (coreProvider.isAppRunning) {
+		await mainMenu();
+	}
+	exit();
 };
 
 start();

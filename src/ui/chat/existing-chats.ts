@@ -15,68 +15,71 @@ interface MappedChatType {
 }
 
 const mapChats = async (chats: ChatTypeWithId[]): Promise<MappedChatType[]> => {
-  let mappedChats: MappedChatType[] = [];
+	const mappedChats: MappedChatType[] = [];
 
-  for (const chat of chats) {
-    let loggedInUserId;
-    let otherUserId;
-    if (chat.userAId === CoreProvider.instance.userId) {
-      loggedInUserId = chat.userAId;
-      otherUserId = chat.userBId;
-    } else {
-      loggedInUserId = chat.userBId;
-      otherUserId = chat.userAId;
-    }
-    const loggedInUserEmail = (await searchForUserById(loggedInUserId)).email;
-    const otherUserEmail = (await searchForUserById(otherUserId)).email;
+	for (const chat of chats) {
+		let loggedInUserId;
+		let otherUserId;
+		if (chat.userAId === CoreProvider.instance.userId) {
+			loggedInUserId = chat.userAId;
+			otherUserId = chat.userBId;
+		} else {
+			loggedInUserId = chat.userBId;
+			otherUserId = chat.userAId;
+		}
+		const loggedInUserEmail = (await searchForUserById(loggedInUserId)).email;
+		const otherUserEmail = (await searchForUserById(otherUserId)).email;
 
-    mappedChats.push({
-      id: chat.id,
-      loggedInUser: {
-        userId: loggedInUserId,
-        email: loggedInUserEmail,
-      },
-      otherUser: {
-        userId: otherUserId,
-        email: otherUserEmail,
-      },
-    });
-  }
-  return mappedChats;
+		mappedChats.push({
+			id: chat.id,
+			loggedInUser: {
+				userId: loggedInUserId,
+				email: loggedInUserEmail
+			},
+			otherUser: {
+				userId: otherUserId,
+				email: otherUserEmail
+			}
+		});
+	}
+	return mappedChats;
 };
 
-export const existingChatsView = async (): Promise<ViewResponse<{ chatId: string; recipient: UserType } | void>> => {
-  try {
-    const userId = CoreProvider.instance.userId;
-    const chats = await getAllChatsForUser(userId);
-    if (chats.length === 0) throw new Error('No existing chats. Start a new one, ya dingus!');
-    const mappedChats = await mapChats(chats);
+export const existingChatsView = async (): Promise<
+  ViewResponse<{ chatId: string; recipient: UserType } | void>
+> => {
+	try {
+		const userId = CoreProvider.instance.userId;
+		const chats = await getAllChatsForUser(userId);
+		if (chats.length === 0)
+			throw new Error('No existing chats. Start a new one, ya dingus!');
+		const mappedChats = await mapChats(chats);
 
-    const list: ListQuestion = {
-      name: 'chat',
-      message: 'Existing Chats',
-      choices: [
-        new inquirer.Separator(),
-        ...mappedChats.map((choice) => ({
-          name: choice.otherUser.email,
-          short: choice.otherUser.email,
-          value: { chatId: choice.id, recipient: choice.otherUser },
-          disabled: false,
-        })),
-        goBackChoice,
-      ],
-      type: 'list',
-    };
-    const { chat } = await inquirer.prompt([list]);
-    if (chat === goBackChoice) {
-      clear();
-      return new ViewResponse(ViewResponseType.SUCCESS);
-    }
-    const response = new ViewResponse(ViewResponseType.SUCCESS, chat);
-    return response;
-  } catch (error) {
-    handleError(error);
-    const response = new ViewResponse(ViewResponseType.FAIL);
-    return response;
-  }
+		const list: ListQuestion = {
+			name: 'chat',
+			message: 'Existing Chats',
+			choices: [
+				new inquirer.Separator(),
+				...mappedChats.map((choice) => ({
+					name: choice.otherUser.email,
+					short: choice.otherUser.email,
+					value: { chatId: choice.id, recipient: choice.otherUser },
+					disabled: false
+				})),
+				goBackChoice
+			],
+			type: 'list'
+		};
+		const { chat } = await inquirer.prompt([list]);
+		if (chat === goBackChoice) {
+			clear();
+			return new ViewResponse(ViewResponseType.SUCCESS);
+		}
+		const response = new ViewResponse(ViewResponseType.SUCCESS, chat);
+		return response;
+	} catch (error) {
+		handleError(error);
+		const response = new ViewResponse(ViewResponseType.FAIL);
+		return response;
+	}
 };
