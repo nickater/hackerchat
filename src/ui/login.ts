@@ -12,7 +12,6 @@ export const loginView = async (): Promise<ViewResponse> => {
     const { email, password } = await inquirer.prompt([emailQuestion, passwordQuestion]);
     const authenticationResponse = await authenticateUser({ email, password });
     if (authenticationResponse.user) {
-      CoreProvider.instance.setIsLoggedIn(true);
       CoreProvider.instance.setUserId(authenticationResponse.user.uid);
     }
     const response = new ViewResponse(ViewResponseType.SUCCESS);

@@ -9,6 +9,5 @@ export const registerView = async () => {
   const { email, password } = await inquirer.prompt([emailQuestion, passwordQuestion]);
   const response = await registerUser({ email, password });
   if (!response.user) throw new Error('User not registered.');
-  CoreProvider.instance.setIsLoggedIn(true);
   CoreProvider.instance.setUserId(response.user.uid);
 };

@@ -1,6 +1,7 @@
 import clear from 'clear';
 import inquirer, { ListQuestion } from 'inquirer';
 import { CoreProvider } from '../services/state/CoreProvider';
+import { getId } from '../utils/hackerchatrc';
 import { chatMenuView } from './chat/chat-menu';
 import { loginView } from './login';
 import { registerView } from './register';
@@ -36,6 +37,12 @@ const logout = () => {
 };
 
 export const mainMenu = async () => {
+  try {
+    const userId = await getId();
+    if (userId) {
+      CoreProvider.instance.setUserId(userId);
+    }
+  } catch {}
   clear();
   const { destination } = await inquirer.prompt<{ destination: string }>([mainMenuList()]);
   switch (destination) {

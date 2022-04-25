@@ -2,9 +2,9 @@ import fs from 'fs/promises';
 import os from 'os';
 import { convertFileToObject } from './file-helper';
 
-const tokenFile = `${os.homedir()}/.budgetrc`;
+const tokenFile = `${os.homedir()}/.hackerchatrc`;
 
-export const clearBudgetrcFile = async () => {
+export const clearHackerChatrcFile = async () => {
   try {
     return await fs.rm(tokenFile);
   } catch {
@@ -36,7 +36,7 @@ export const getId = async () => {
     id = entity.ID;
     return id;
   } catch {
-    throw new Error("You're not logged in");
+    throw new Error('No ID saved to file');
   }
 };
 
