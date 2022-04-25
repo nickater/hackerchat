@@ -1,5 +1,5 @@
 {
-  "name": "hackerchat",
+  "name": "hackrchat",
   "version": "1.1.0",
   "main": "./src",
   "license": "MIT",
@@ -32,5 +32,8 @@
     "firebase": "^9.6.11",
     "inquirer": "^8.2.2",
     "rxjs": "^7.5.5"
-  }
+  },
+  "description": "A CLI tool for chatting with all of your hacker friends",
+  "repository": "https://github.com/nickater/hackerchat.git",
+  "author": "Nick Ater <nick@atercloud.com>"
 }
