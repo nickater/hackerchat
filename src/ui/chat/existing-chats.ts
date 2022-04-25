@@ -7,6 +7,7 @@ import { ViewResponse, ViewResponseType } from '../types';
 import { ChatTypeWithId, UserType } from '../../types';
 import { goBackChoice } from '../../utils/questions';
 import { clear } from 'console';
+import { waitWithDone } from '../../utils/general';
 
 interface MappedChatType {
   id: string;
@@ -79,6 +80,7 @@ export const existingChatsView = async (): Promise<
 		return response;
 	} catch (error) {
 		handleError(error);
+		await waitWithDone();
 		const response = new ViewResponse(ViewResponseType.FAIL);
 		return response;
 	}

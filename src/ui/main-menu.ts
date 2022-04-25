@@ -1,11 +1,12 @@
 import clear from 'clear';
 import inquirer, { ListQuestion } from 'inquirer';
 import { CoreProvider } from '../services/state/CoreProvider';
-import { clearHackerChatrcFile, getEmail, getId } from '../utils/persistance';
+import { line } from '../utils/general';
+import { clearPersistedState, getEmail, getId, getRememberMe } from '../utils/persistence';
 import { chatMenuView } from './chat/chat-menu';
 import { loginView } from './login';
 import { registerView } from './register';
-import { settingsView } from './settings';
+import { settingsView } from './settings/settings';
 import { ViewResponseType } from './types';
 
 const choiceManager = () => {
@@ -24,18 +25,19 @@ const mainMenuList = (): ListQuestion => ({
 	name: 'destination',
 	type: 'list',
 	message: 'Main Menu',
-	choices: choiceManager()
+	choices: [line(), ...choiceManager()]
 });
 
 const attemptAutoLogin = async () => {
 	try {
-		const userId = await getId();
-		const email = await getEmail();
-		await CoreProvider.instance.setUserId(userId);
-		await CoreProvider.instance.setUserEmail(email);
-	} catch {
-		await clearHackerChatrcFile();
-	}
+		const rememberMe = getRememberMe();
+		if (rememberMe) {
+			const userId = getId();
+			const email = getEmail();
+			CoreProvider.instance.setUserId(userId);
+			CoreProvider.instance.setUserEmail(email);
+		}
+	} catch {}
 };
 
 const exit = () => {
@@ -45,7 +47,8 @@ const exit = () => {
 
 const logout = async () => {
 	CoreProvider.instance.clearUserId();
-	await clearHackerChatrcFile();
+	const clearAll = true;
+	clearPersistedState(clearAll);
 	exit();
 };
 
@@ -56,31 +59,31 @@ export const mainMenu = async () => {
 		mainMenuList()
 	]);
 	switch (destination) {
-	case 'chat':
-		await chatMenuView();
-		break;
-	case 'login': {
-		let loginSuccessful = false;
-		while (!loginSuccessful) {
-			const loginResponse = await loginView();
-			loginSuccessful =
-          loginResponse.responseType === ViewResponseType.SUCCESS;
+		case 'chat':
+			await chatMenuView();
+			break;
+		case 'login': {
+			let loginSuccessful = false;
+			while (!loginSuccessful) {
+				const loginResponse = await loginView();
+				loginSuccessful =
+					loginResponse.responseType === ViewResponseType.SUCCESS;
+			}
+			break;
 		}
-		break;
-	}
-	case 'register':
-		await registerView();
-		break;
-	case 'settings':
-		await settingsView();
-		break;
-	case 'logout':
-		await logout();
-		break;
-	case 'exit':
-		exit();
-		break;
-	default:
-		break;
+		case 'register':
+			await registerView();
+			break;
+		case 'settings':
+			await settingsView();
+			break;
+		case 'logout':
+			await logout();
+			break;
+		case 'exit':
+			exit();
+			break;
+		default:
+			break;
 	}
 };

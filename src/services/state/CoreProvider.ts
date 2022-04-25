@@ -1,13 +1,20 @@
-import { clearHackerChatrcFile } from '../../utils/persistance';
-
 export class CoreProvider {
 	public static instance: CoreProvider = new CoreProvider();
 	private _userId = '';
 	private _userEmail = '';
 	private _isAppRunning = true;
 	private _isLoggedIn = false;
+	private _rememberMe = true;
 
-	public setUserId = async (userId: string) => {
+	public setRememberMe = (choice: boolean) => {
+		this._rememberMe = choice;
+	};
+
+	get shouldRememberMe() {
+		return this._rememberMe;
+	}
+
+	public setUserId = (userId: string) => {
 		this._userId = userId;
 		this.setIsLoggedIn(true);
 	};
@@ -15,14 +22,14 @@ export class CoreProvider {
 	public clearUserId = () => {
 		this._userId = '';
 		this.setIsLoggedIn(false);
-		clearHackerChatrcFile();
+
 	};
 
 	get userId() {
 		return this._userId;
 	}
 
-	public setUserEmail = async (email: string) => {
+	public setUserEmail = (email: string) => {
 		this._userEmail = email;
 	};
 

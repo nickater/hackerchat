@@ -5,9 +5,10 @@ import { searchForUserByEmail } from '../../services/user-service';
 import { ViewResponse, ViewResponseType } from '../types';
 import { handleError } from '../../utils/error-handler';
 import { UserType } from '../../types';
+import { color } from '../../utils/colors';
 
 export const newChatView = async (): Promise<
-  ViewResponse<{ chatId: string; recipient: UserType } | void>
+	ViewResponse<{ chatId: string; recipient: UserType } | void>
 > => {
 	const senderId = CoreProvider.instance.userId;
 	try {
@@ -22,7 +23,12 @@ export const newChatView = async (): Promise<
 		const { userId: recipientId } = await searchForUserByEmail(
 			newChatRecipientEmail
 		);
-		const chatId = await findChat({ senderId, recipientId }, false);
+
+		if (recipientId) {
+			color.casual('User found!');
+		}
+
+		const chatId = await findChat({ senderId, recipientId });
 		if (chatId) {
 			throw new Error('Chat already exists. Navigate to existing chats.');
 		}
