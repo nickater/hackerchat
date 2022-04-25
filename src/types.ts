@@ -1,7 +1,7 @@
 export interface MessageType {
   content: string;
-  recipient: string;
-  sender: string;
+  recipientId: string;
+  senderId: string;
   sentDate: Date;
 }
 

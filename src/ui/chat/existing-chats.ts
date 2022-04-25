@@ -43,29 +43,30 @@ const mapChats = async (chats: ChatTypeWithId[]): Promise<MappedChatType[]> => {
   return mappedChats;
 };
 
-export const existingChatsView = async (): Promise<ViewResponse> => {
+export const existingChatsView = async (): Promise<ViewResponse<{ chatId: string; recipientId: string } | void>> => {
   try {
     const userId = CoreProvider.instance.userId;
     const chats = await getAllChatsForUser(userId);
     const mappedChats = await mapChats(chats);
 
     const list: ListQuestion = {
-      name: 'chatChoice',
+      name: 'chat',
       message: 'Existing Chats',
       choices: [
         new inquirer.Separator(),
         ...mappedChats.map((choice) => ({
           name: choice.otherUser.email,
           short: choice.otherUser.email,
-          value: choice.id,
+          value: { chatId: choice.id, recipientId: choice.otherUser.userId },
           disabled: false,
         })),
       ],
       type: 'list',
     };
-    const { chatChoice } = await inquirer.prompt([list]);
+    const { chat } = await inquirer.prompt([list]);
 
-    const response = new ViewResponse(ViewResponseType.SUCCESS, chatChoice);
+    const response = new ViewResponse(ViewResponseType.SUCCESS, chat);
+    console.log(response);
     return response;
   } catch (error) {
     handleError(error);

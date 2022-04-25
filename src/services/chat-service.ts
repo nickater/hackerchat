@@ -1,7 +1,6 @@
-import { addDoc, getDocs, query, where } from 'firebase/firestore';
-import { ChatTypeWithId, MessageType } from '../types';
-import { print } from '../utils/log';
-import { chatsCollection, createCollection, db } from './db';
+import { addDoc, arrayUnion, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { ChatTypeWithId } from '../types';
+import { chatsCollection, db } from './db';
 
 export interface ChatParams {
   senderId: string;
@@ -13,16 +12,28 @@ export const initializeChat = async ({ senderId, recipientId, content }: ChatPar
   const result = await addDoc(chatsCollection, {
     userAId: senderId,
     userBId: recipientId,
+    messages: [
+      {
+        content,
+        recipientId,
+        senderId,
+        sentDate: new Date(),
+      },
+    ],
   });
 
-  const messagesCollectionRef = createCollection<MessageType>(`chats/${result.id}/messages`);
-  const messageResult = await addDoc(messagesCollectionRef, {
-    content,
-    recipient: recipientId,
-    sender: senderId,
-    sentDate: new Date(),
+  return result.id;
+};
+
+export const sendMessage = async ({ senderId, recipientId, content, chatId }: ChatParams & { chatId: string }) => {
+  return await updateDoc(doc(db, 'chats', chatId), {
+    messages: arrayUnion({
+      content,
+      recipientId,
+      senderId,
+      sentDate: new Date(),
+    }),
   });
-  return messageResult.id;
 };
 
 export const getAllChatsForUser = async (userId: string): Promise<ChatTypeWithId[]> => {

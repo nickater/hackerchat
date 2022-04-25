@@ -27,6 +27,15 @@ const mainMenuList = (): ListQuestion => ({
   choices: choiceManager(),
 });
 
+const attemptAutoLogin = async () => {
+  try {
+    const userId = await getId();
+    if (userId) {
+      CoreProvider.instance.setUserId(userId);
+    }
+  } catch {}
+};
+
 const exit = () => {
   const coreProvider = CoreProvider.instance;
   coreProvider.quitApp();
@@ -37,12 +46,7 @@ const logout = () => {
 };
 
 export const mainMenu = async () => {
-  try {
-    const userId = await getId();
-    if (userId) {
-      CoreProvider.instance.setUserId(userId);
-    }
-  } catch {}
+  await attemptAutoLogin();
   clear();
   const { destination } = await inquirer.prompt<{ destination: string }>([mainMenuList()]);
   switch (destination) {

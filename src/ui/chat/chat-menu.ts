@@ -4,6 +4,7 @@ import { ViewResponseType } from '../types';
 import { print } from '../../utils/log';
 import { existingChatsView } from './existing-chats';
 import { newChatView } from './new-chat';
+import { chatView } from './chat';
 
 let shouldStillViewChatMenu = true;
 
@@ -28,6 +29,7 @@ const goBackToMainMenu = () => {
 
 // should be displayed in a while loop until user leaves
 export const chatMenuView = async () => {
+  let chat;
   clear();
   while (shouldStillViewChatMenu) {
     const { destination } = await inquirer.prompt<{ destination: string }>([chatMenuList()]);
@@ -35,14 +37,15 @@ export const chatMenuView = async () => {
       case 'new': {
         const newChatResponse = await newChatView();
         if (newChatResponse.responseType === ViewResponseType.SUCCESS) {
-          print('Navigate to chat window with', newChatResponse.data);
+          chat = newChatResponse.data;
         }
         break;
       }
       case 'existing': {
         const existingChatResponse = await existingChatsView();
         if (existingChatResponse.responseType === ViewResponseType.SUCCESS) {
-          print('Navigate to chat window with', existingChatResponse.data);
+          print('Navigate to chat window with');
+          chat = existingChatResponse.data;
         }
         break;
       }
@@ -51,6 +54,10 @@ export const chatMenuView = async () => {
         break;
       default:
         break;
+    }
+    console.log(chat);
+    if (chat) {
+      await chatView(chat.chatId, chat.recipientId);
     }
   }
 };
