@@ -15,29 +15,24 @@ export const clearHackerChatrcFile = async () => {
 export const getEmail = async () => {
   let file: string;
   let email: string;
-  try {
-    file = await fs.readFile(tokenFile, { encoding: 'utf-8' });
-    const lines = file.split(/\r?\n/).filter((line) => line !== '');
-    const entity = convertFileToObject(lines);
-    email = entity.EMAIL;
-    return email;
-  } catch {
-    throw new Error('Cannot find email. Try logging in again.');
-  }
+  file = await fs.readFile(tokenFile, { encoding: 'utf-8' });
+  const lines = file.split(/\r?\n/).filter((line) => line !== '');
+  const entity = convertFileToObject(lines);
+  email = entity.EMAIL;
+  if (email === '') throw new Error('No ID found');
+
+  return email;
 };
 
 export const getId = async () => {
   let file: string;
   let id: string;
-  try {
-    file = await fs.readFile(tokenFile, { encoding: 'utf-8' });
-    const lines = file.split(/\r?\n/).filter((line) => line !== '');
-    const entity = convertFileToObject(lines);
-    id = entity.ID;
-    return id;
-  } catch {
-    throw new Error('No ID saved to file');
-  }
+  file = await fs.readFile(tokenFile, { encoding: 'utf-8' });
+  const lines = file.split(/\r?\n/).filter((line) => line !== '');
+  const entity = convertFileToObject(lines);
+  id = entity.ID;
+  if (id === '') throw new Error('No ID found');
+  return id;
 };
 
 export const saveEmail = async (email: string) => {

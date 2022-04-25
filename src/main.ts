@@ -3,7 +3,6 @@
 import { mainMenu } from './ui/main-menu';
 import { CoreProvider } from './services/state/CoreProvider';
 import clear from 'clear';
-import { getId } from './utils/hackerchatrc';
 
 const coreProvider = CoreProvider.instance;
 const exit = () => process.exit();

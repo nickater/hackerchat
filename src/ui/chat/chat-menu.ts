@@ -55,9 +55,8 @@ export const chatMenuView = async () => {
       default:
         break;
     }
-    console.log(chat);
     if (chat) {
-      await chatView(chat.chatId, chat.recipientId);
+      await chatView(chat.chatId, chat.recipient);
     }
   }
 };

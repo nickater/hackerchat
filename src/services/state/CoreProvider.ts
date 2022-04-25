@@ -1,14 +1,14 @@
-import { clearHackerChatrcFile, getId, saveId } from '../../utils/hackerchatrc';
+import { clearHackerChatrcFile, saveEmail, saveId } from '../../utils/hackerchatrc';
 
 export class CoreProvider {
   public static instance: CoreProvider = new CoreProvider();
   private _userId = '';
+  private _userEmail = '';
   private _isAppRunning = true;
   private _isLoggedIn = false;
 
-  public setUserId = (userId: string) => {
+  public setUserId = async (userId: string) => {
     this._userId = userId;
-    saveId(userId);
     this.setIsLoggedIn(true);
   };
 
@@ -20,6 +20,14 @@ export class CoreProvider {
 
   get userId() {
     return this._userId;
+  }
+
+  public setUserEmail = async (email: string) => {
+    this._userEmail = email;
+  };
+
+  get userEmail() {
+    return this._userEmail;
   }
 
   private setIsLoggedIn = (isLoggedIn: boolean) => {

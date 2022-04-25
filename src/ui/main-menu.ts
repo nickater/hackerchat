@@ -1,7 +1,7 @@
 import clear from 'clear';
 import inquirer, { ListQuestion } from 'inquirer';
 import { CoreProvider } from '../services/state/CoreProvider';
-import { getId } from '../utils/hackerchatrc';
+import { clearHackerChatrcFile, getEmail, getId } from '../utils/hackerchatrc';
 import { chatMenuView } from './chat/chat-menu';
 import { loginView } from './login';
 import { registerView } from './register';
@@ -30,10 +30,12 @@ const mainMenuList = (): ListQuestion => ({
 const attemptAutoLogin = async () => {
   try {
     const userId = await getId();
-    if (userId) {
-      CoreProvider.instance.setUserId(userId);
-    }
-  } catch {}
+    const email = await getEmail();
+    await CoreProvider.instance.setUserId(userId);
+    await CoreProvider.instance.setUserEmail(email);
+  } catch {
+    await clearHackerChatrcFile();
+  }
 };
 
 const exit = () => {
@@ -41,7 +43,9 @@ const exit = () => {
   coreProvider.quitApp();
 };
 
-const logout = () => {
+const logout = async () => {
+  CoreProvider.instance.clearUserId();
+  await clearHackerChatrcFile();
   exit();
 };
 
@@ -68,7 +72,7 @@ export const mainMenu = async () => {
       await settingsView();
       break;
     case 'logout':
-      logout();
+      await logout();
       break;
     case 'exit':
       exit();

@@ -43,7 +43,7 @@ const mapChats = async (chats: ChatTypeWithId[]): Promise<MappedChatType[]> => {
   return mappedChats;
 };
 
-export const existingChatsView = async (): Promise<ViewResponse<{ chatId: string; recipientId: string } | void>> => {
+export const existingChatsView = async (): Promise<ViewResponse<{ chatId: string; recipient: UserType } | void>> => {
   try {
     const userId = CoreProvider.instance.userId;
     const chats = await getAllChatsForUser(userId);
@@ -57,7 +57,7 @@ export const existingChatsView = async (): Promise<ViewResponse<{ chatId: string
         ...mappedChats.map((choice) => ({
           name: choice.otherUser.email,
           short: choice.otherUser.email,
-          value: { chatId: choice.id, recipientId: choice.otherUser.userId },
+          value: { chatId: choice.id, recipient: choice.otherUser },
           disabled: false,
         })),
       ],
@@ -66,7 +66,6 @@ export const existingChatsView = async (): Promise<ViewResponse<{ chatId: string
     const { chat } = await inquirer.prompt([list]);
 
     const response = new ViewResponse(ViewResponseType.SUCCESS, chat);
-    console.log(response);
     return response;
   } catch (error) {
     handleError(error);
