@@ -7,7 +7,7 @@ import { ViewResponse, ViewResponseType } from '../types';
 import { ChatTypeWithId, UserType } from '../../types';
 import { goBackChoice } from '../../utils/questions';
 import { clear } from 'console';
-import { waitWithDone } from '../../utils/general';
+import { line, waitWithDone } from '../../utils/general';
 
 interface MappedChatType {
   id: string;
@@ -60,7 +60,7 @@ export const existingChatsView = async (): Promise<
 			name: 'chat',
 			message: 'Existing Chats',
 			choices: [
-				new inquirer.Separator(),
+				line,
 				...mappedChats.map((choice) => ({
 					name: choice.otherUser.email,
 					short: choice.otherUser.email,

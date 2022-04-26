@@ -6,7 +6,7 @@ import { newChatView } from './new-chat';
 import { chatView } from './chat';
 
 const choiceManager = () => {
-	const choices: string[] = [];
+	const choices: (string | inquirer.SeparatorOptions)[] = [];
 	choices.push('new');
 	choices.push('existing');
 	choices.push('go back');

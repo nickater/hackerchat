@@ -1,13 +1,12 @@
 import clear from 'clear';
 import inquirer, { ListQuestion } from 'inquirer';
 import { CoreProvider } from '../services/state/CoreProvider';
-import { line } from '../utils/general';
-import { clearPersistedState, getEmail, getId, getRememberMe } from '../utils/persistence';
+import { displayLogo, exit, line, logout, waitFor } from '../utils/general';
+import { getEmail, getId, getRememberMe } from '../utils/persistence';
 import { chatMenuView } from './chat/chat-menu';
 import { loginView } from './login';
 import { registerView } from './register';
 import { settingsView } from './settings/settings';
-import { ViewResponseType } from './types';
 
 const choiceManager = () => {
 	const { isLoggedIn } = CoreProvider.instance;
@@ -25,7 +24,7 @@ const mainMenuList = (): ListQuestion => ({
 	name: 'destination',
 	type: 'list',
 	message: 'Main Menu',
-	choices: [line(), ...choiceManager()]
+	choices: [line, ...choiceManager()]
 });
 
 const attemptAutoLogin = async () => {
@@ -37,24 +36,16 @@ const attemptAutoLogin = async () => {
 			CoreProvider.instance.setUserId(userId);
 			CoreProvider.instance.setUserEmail(email);
 		}
-	} catch {}
-};
-
-const exit = () => {
-	const coreProvider = CoreProvider.instance;
-	coreProvider.quitApp();
-};
-
-const logout = async () => {
-	CoreProvider.instance.clearUserId();
-	const clearAll = true;
-	clearPersistedState(clearAll);
-	exit();
+	} catch { }
 };
 
 export const mainMenu = async () => {
-	await attemptAutoLogin();
+	if (!CoreProvider.instance.isLoggedIn) {
+		await attemptAutoLogin();
+	}
 	clear();
+	displayLogo();
+	await waitFor(0.2);
 	const { destination } = await inquirer.prompt<{ destination: string }>([
 		mainMenuList()
 	]);
@@ -63,12 +54,7 @@ export const mainMenu = async () => {
 			await chatMenuView();
 			break;
 		case 'login': {
-			let loginSuccessful = false;
-			while (!loginSuccessful) {
-				const loginResponse = await loginView();
-				loginSuccessful =
-					loginResponse.responseType === ViewResponseType.SUCCESS;
-			}
+			await loginView();
 			break;
 		}
 		case 'register':
