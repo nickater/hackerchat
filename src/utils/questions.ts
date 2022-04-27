@@ -1,4 +1,4 @@
-import { Question } from 'inquirer';
+import inquirer, { Question } from 'inquirer';
 
 export const areYouSureQuestion: Question = {
 	type: 'confirm',
@@ -45,4 +45,13 @@ export const passwordQuestion: Question = {
 	name: 'password'
 };
 
+export const tryAgainQuestion = ({
+	type: 'confirm',
+	message: 'Would you like to try again?',
+	name: 'isConfirmed'
+});
+
 export const goBackChoice = 'go back';
+
+export const getRecipientEmail = async () => await inquirer.prompt([emailQuestion]);
+export const getTryAgainResponse = async () => await inquirer.prompt([tryAgainQuestion]);

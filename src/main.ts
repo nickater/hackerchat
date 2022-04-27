@@ -10,7 +10,6 @@ const exit = () => process.exit();
 
 const start = async () => {
 	await initialStateHandler();
-
 	clear();
 	while (coreProvider.isAppRunning) {
 		await mainMenu();

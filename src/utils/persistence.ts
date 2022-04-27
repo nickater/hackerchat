@@ -21,7 +21,6 @@ export const clearPersistedState = (clearAll?: boolean) => {
 
 export const getRememberMe = () => {
 	const rememberMeState = persist.get(PersistItem.REMEMBER_ME) as boolean;
-	if (rememberMeState === undefined) throw new Error('No persisted remember me state');
 	return rememberMeState;
 };
 

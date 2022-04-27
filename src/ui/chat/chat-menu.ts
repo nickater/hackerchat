@@ -1,12 +1,19 @@
-import clear from 'clear';
 import inquirer, { ListQuestion } from 'inquirer';
 import { ViewResponseType } from '../types';
 import { existingChatsView } from './existing-chats';
 import { newChatView } from './new-chat';
 import { chatView } from './chat';
+import { UserType } from '../../types';
+import clear from 'clear';
+
+export interface MappedChatType {
+  id: string;
+  loggedInUser: UserType;
+  otherUser: UserType;
+}
 
 const choiceManager = () => {
-	const choices: string[] = [];
+	const choices: (string | inquirer.SeparatorOptions)[] = [];
 	choices.push('new');
 	choices.push('existing');
 	choices.push('go back');
@@ -51,7 +58,7 @@ export const chatMenuView = async () => {
 				break;
 		}
 		if (chat) {
-			await chatView(chat.chatId, chat.recipient);
+			await chatView(chat);
 		}
 	}
 	keepViewing = true;

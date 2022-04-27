@@ -3,11 +3,11 @@ import { emailQuestion, passwordQuestion } from '../utils/questions';
 import { print } from '../utils/log';
 import { authenticateUser } from '../services/auth/auth-service';
 import { CoreProvider } from '../services/state/CoreProvider';
-import { ViewResponse, ViewResponseType } from './types';
 import { handleError } from '../utils/error-handler';
 import { getRememberMe, saveEmail, saveId } from '../utils/persistence';
+import { waitWithMessage } from '../utils/general';
 
-export const loginView = async (): Promise<ViewResponse> => {
+export const loginView = async () => {
 	try {
 		print('HackerChat Login');
 		const { email, password } = await inquirer.prompt([
@@ -24,11 +24,10 @@ export const loginView = async (): Promise<ViewResponse> => {
 				saveEmail(email);
 			}
 		}
-		const response = new ViewResponse(ViewResponseType.SUCCESS);
-		return response;
+		return;
 	} catch (error) {
 		handleError(error);
-		const response = new ViewResponse(ViewResponseType.FAIL);
-		return response;
+		await waitWithMessage('Ok');
+		return;
 	}
 };

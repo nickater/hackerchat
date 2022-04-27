@@ -19,7 +19,7 @@ export const settingsView = async () => {
 		print(`Email: ${userEmail}`);
 		linePrinted();
 		
-		const { settingsChoice } = await inquirer.prompt<{ settingsChoice: SettingsChoice }>({ name: 'settingsChoice', message: 'User Settings', type: 'list', choices: [line(),...Object.values(SettingsChoice)] });
+		const { settingsChoice } = await inquirer.prompt<{ settingsChoice: SettingsChoice }>({ name: 'settingsChoice', message: 'User Settings', type: 'list', choices: [line,...Object.values(SettingsChoice)] });
 
 		switch (settingsChoice) {
 			case SettingsChoice.rememberMe:
