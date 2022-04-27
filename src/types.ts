@@ -1,14 +1,16 @@
-export interface MessageType {
+import { Timestamp } from 'firebase/firestore';
+
+export interface MessageTypeFirestore {
   content: string;
   recipientId: string;
   senderId: string;
-  sentDate: Date;
+  sentDate: Timestamp;
 }
 
 export interface ChatType {
   userAId: string;
   userBId: string;
-  messages?: MessageType[];
+  messages?: MessageTypeFirestore[];
 }
 
 export interface ChatTypeWithId extends ChatType {

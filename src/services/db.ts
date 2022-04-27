@@ -2,10 +2,11 @@ import { app } from '../firebase';
 import {
 	collection,
 	CollectionReference,
+	doc,
 	DocumentData,
+	DocumentReference,
 	getFirestore
 } from 'firebase/firestore';
-import { ChatType, UserType } from '../types';
 
 export const db = getFirestore(app);
 
@@ -13,5 +14,7 @@ export const createCollection = <T = DocumentData>(collectionName: string) => {
 	return collection(db, collectionName) as CollectionReference<T>;
 };
 
-export const usersCollection = createCollection<UserType>('users');
-export const chatsCollection = createCollection<ChatType>('chats');
+export const createDocument = <T = DocumentData>(documentPath: string) => {
+	return doc(db, documentPath) as DocumentReference<T>;
+};
+

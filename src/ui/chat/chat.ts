@@ -1,53 +1,66 @@
 import chalk from 'chalk';
 import clear from 'clear';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { onSnapshot } from 'firebase/firestore';
 import inquirer from 'inquirer';
-import { sendMessage } from '../../services/chat-service';
-import { db } from '../../services/db';
+import { Message } from '../../models/Message';
+import { chatDocRefWithConverter, sendMessage } from '../../services/chat-service';
 import { CoreProvider } from '../../services/state/CoreProvider';
-import { MessageType, UserType } from '../../types';
+import { isSameDay } from '../../utils/dates';
+import { blankLine, longestStringLength } from '../../utils/general';
 import { print } from '../../utils/log';
+import { MappedChatType } from './chat-menu';
+
+const chatHeader = (otherUser: string) => {
+	print(chalk.cyan(otherUser));
+	const exitText = chalk.underline.red('"exit()"');
+	print(`Type ${exitText} to leave chat`);
+	blankLine;
+};
 
 const formatChat = (
-	message: MessageType,
-	recipient: UserType,
-	{ userId: loggedInUserId, email: loggedInUserEmail }: UserType
+	message: Message,
+	mappedChat: MappedChatType
 ): string => {
-	let formattedMessage = '';
-	const formattedDate = new Date(
-		(message.sentDate as any).toDate()
-	).toLocaleString();
+	let formattedDate = message.sentDate.toDateString();
+	const actualDate = message.sentDate;
+	if (isSameDay(new Date(), actualDate)) {
+		formattedDate = actualDate.toLocaleTimeString();
+	}
+	let formattedMessage;
 
-	if (message.senderId === loggedInUserId) {
+	const longestEmailLength = longestStringLength([mappedChat.loggedInUser.email, mappedChat.otherUser.email]);
+	const dateTimeLength = formattedDate.length;
+
+	if (message.senderId === mappedChat.loggedInUser.userId) {
 		formattedMessage =
-      chalk.red(loggedInUserEmail) +
-      ' ' +
-      chalk.blue(formattedDate) +
-      ' ' +
-      chalk.blueBright(message.content);
+			chalk.red(mappedChat.loggedInUser.email.padEnd(longestEmailLength)) +
+			' ' +
+			chalk.blue(formattedDate.padEnd(dateTimeLength)) +
+			' ' +
+			chalk.blueBright(message.content);
 	} else {
 		formattedMessage =
-      chalk.cyan(recipient.email) +
-      ' ' +
-      chalk.green(formattedDate) +
-      ' ' +
-      chalk.yellow(message.content);
+			chalk.cyan(mappedChat.otherUser.email.padEnd(longestEmailLength)) +
+			' ' +
+			chalk.green(formattedDate.padEnd(dateTimeLength)) +
+			' ' +
+			chalk.yellow(message.content);
 	}
 	return formattedMessage;
 };
 
-export const chatView = async (chatId: string, recipient: UserType) => {
-	const loggedInUserId = CoreProvider.instance.userId;
-	const userEmail = CoreProvider.instance.userEmail;
+export const chatView = async (mappedChat: MappedChatType) => {
 	let stillChatting = true;
 	const senderId = CoreProvider.instance.userId;
-	const unsub = onSnapshot(doc(db, 'chats', chatId), (doc) => {
-		clear();
-		print('Type "exit()" to leave chat');
-		for (const d of doc.data()!.messages) {
-			print(
-				formatChat(d, recipient, { userId: loggedInUserId, email: userEmail })
-			);
+	const unsub = onSnapshot(chatDocRefWithConverter(mappedChat.id), (doc) => {
+		if(doc.exists()) {
+			clear();
+			chatHeader(mappedChat.otherUser.email);
+			for (const d of doc.data().messages) {
+				print(
+					formatChat(d, mappedChat)
+				);
+			}
 		}
 	});
 
@@ -67,9 +80,9 @@ export const chatView = async (chatId: string, recipient: UserType) => {
 		} else {
 			await sendMessage({
 				senderId,
-				recipientId: recipient.userId,
+				recipientId: mappedChat.otherUser.userId,
 				content: message,
-				chatId
+				chatId: mappedChat.id
 			});
 		}
 	}

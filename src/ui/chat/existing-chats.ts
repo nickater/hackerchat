@@ -4,18 +4,13 @@ import { CoreProvider } from '../../services/state/CoreProvider';
 import { searchForUserById } from '../../services/user-service';
 import { handleError } from '../../utils/error-handler';
 import { ViewResponse, ViewResponseType } from '../types';
-import { ChatTypeWithId, UserType } from '../../types';
 import { goBackChoice } from '../../utils/questions';
 import { clear } from 'console';
 import { line, waitWithDone } from '../../utils/general';
+import { Chat } from '../../models/Chat';
+import { MappedChatType } from './chat-menu';
 
-interface MappedChatType {
-  id: string;
-  loggedInUser: UserType;
-  otherUser: UserType;
-}
-
-const mapChats = async (chats: ChatTypeWithId[]): Promise<MappedChatType[]> => {
+const mapChats = async (chats: Chat[]): Promise<MappedChatType[]> => {
 	const mappedChats: MappedChatType[] = [];
 
 	for (const chat of chats) {
@@ -47,7 +42,7 @@ const mapChats = async (chats: ChatTypeWithId[]): Promise<MappedChatType[]> => {
 };
 
 export const existingChatsView = async (): Promise<
-  ViewResponse<{ chatId: string; recipient: UserType } | void>
+  ViewResponse<MappedChatType | void>
 > => {
 	try {
 		const userId = CoreProvider.instance.userId;
@@ -64,7 +59,7 @@ export const existingChatsView = async (): Promise<
 				...mappedChats.map((choice) => ({
 					name: choice.otherUser.email,
 					short: choice.otherUser.email,
-					value: { chatId: choice.id, recipient: choice.otherUser },
+					value: choice,
 					disabled: false
 				})),
 				goBackChoice

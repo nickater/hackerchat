@@ -22,6 +22,7 @@ export const waitWithMessage = async (message: string) =>
 			type: 'input'
 		}
 	]);
+export const blankLine = print();
 export const line = new Separator();
 export const linePrinted = () => print(line.line);
 export const blankSeparator = new Separator(' ');
@@ -46,4 +47,14 @@ export const logout = async () => {
 	CoreProvider.instance.clearUserId();
 	const clearAll = true;
 	clearPersistedState(clearAll);
+};
+
+export const longestStringLength = (strings: string[]) => {
+	let winner = 0;
+	strings.forEach((str) => {
+		if(str.length > winner) {
+			winner = str.length;
+		}
+	});
+	return winner;
 };

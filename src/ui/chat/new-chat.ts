@@ -4,29 +4,43 @@ import { CoreProvider } from '../../services/state/CoreProvider';
 import { searchForUserByEmail } from '../../services/user-service';
 import { ViewResponse, ViewResponseType } from '../types';
 import { handleError } from '../../utils/error-handler';
-import { UserType } from '../../types';
 import { color } from '../../utils/colors';
+import { MappedChatType } from './chat-menu';
+import { getRecipientEmail, getTryAgainResponse } from '../../utils/questions';
 
 export const newChatView = async (): Promise<
-	ViewResponse<{ chatId: string; recipient: UserType } | void>
+	ViewResponse<MappedChatType | void>
 > => {
 	const senderId = CoreProvider.instance.userId;
-	try {
-		const { newChatRecipientEmail } = await inquirer.prompt([
-			{
-				name: 'newChatRecipientEmail',
-				message: 'Recipient Email: ',
-				type: 'input'
+	const senderEmail = CoreProvider.instance.userEmail;
+	let askForEmail = true;
+	let recipientId;
+	let recipientEmail;
+	while (askForEmail) {
+		try {
+			const { email } = await getRecipientEmail();
+			recipientEmail = email;
+
+			const { userId: id } = await searchForUserByEmail(
+				recipientEmail
+			);
+			recipientId = id;
+			if (recipientId) {
+				askForEmail = false;
 			}
-		]);
-
-		const { userId: recipientId } = await searchForUserByEmail(
-			newChatRecipientEmail
-		);
-
-		if (recipientId) {
-			color.casual('User found!');
+		} catch (error) {
+			handleError(error);
+			const { isConfirmed } = await getTryAgainResponse();
+			if (!isConfirmed) {
+				return new ViewResponse(ViewResponseType.FAIL);
+			}
 		}
+	}
+	askForEmail = true;
+
+	try {
+		if(!recipientId) throw new Error('No recipient ID');
+		color.casual('User found!');
 
 		const chatId = await findChat({ senderId, recipientId });
 		if (chatId) {
@@ -40,11 +54,20 @@ export const newChatView = async (): Promise<
 				type: 'input'
 			}
 		]);
+
 		const newChatId = await initializeChat({ senderId, recipientId, content });
-		const response = new ViewResponse(ViewResponseType.SUCCESS, {
-			chatId: newChatId,
-			recipient: { userId: recipientId, email: newChatRecipientEmail }
-		});
+		const mappedChat: MappedChatType = {
+			id: newChatId,
+			loggedInUser: {
+				userId: senderId,
+				email: senderEmail,
+			},
+			otherUser: {
+				userId: recipientId,
+				email: recipientEmail
+			}
+		};
+		const response = new ViewResponse(ViewResponseType.SUCCESS, mappedChat);
 		return response;
 	} catch (error) {
 		handleError(error);
