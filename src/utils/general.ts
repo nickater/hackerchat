@@ -22,7 +22,7 @@ export const waitWithMessage = async (message: string) =>
 			type: 'input'
 		}
 	]);
-export const blankLine = print();
+export const blankLine = () => print();
 export const line = new Separator();
 export const linePrinted = () => print(line.line);
 export const blankSeparator = new Separator(' ');
@@ -33,7 +33,9 @@ export const waitFor = async (seconds: number) => {
 	}, seconds*1000));
 };
 
+// should be at the top of all menus
 export const displayLogo = () => {
+	clear();
 	print(textSync('Hackr Chat', { horizontalLayout: 'controlled smushing' }));
 };
 

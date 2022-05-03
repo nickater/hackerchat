@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { clear } from 'console';
 import inquirer from 'inquirer';
 import { CoreProvider } from '../../services/state/CoreProvider';
@@ -16,7 +17,8 @@ export const settingsView = async () => {
 		const userEmail = CoreProvider.instance.userEmail;
 
 		linePrinted();
-		print(`Email: ${userEmail}`);
+
+		print(`Email: ${chalk.blue(userEmail)}`);
 		linePrinted();
 		
 		const { settingsChoice } = await inquirer.prompt<{ settingsChoice: SettingsChoice }>({ name: 'settingsChoice', message: 'User Settings', type: 'list', choices: [line,...Object.values(SettingsChoice)] });

@@ -4,7 +4,7 @@ import { existingChatsView } from './existing-chats';
 import { newChatView } from './new-chat';
 import { chatView } from './chat';
 import { UserType } from '../../types';
-import clear from 'clear';
+import { displayLogo } from '../../utils/general';
 
 export interface MappedChatType {
   id: string;
@@ -29,10 +29,9 @@ const chatMenuList = (): ListQuestion => ({
 
 export const chatMenuView = async () => {
 	let keepViewing = true;
-
+	displayLogo();
 	while (keepViewing) {
 		let chat;
-		clear();
 		const { destination } = await inquirer.prompt<{ destination: string }>([
 			chatMenuList()
 		]);

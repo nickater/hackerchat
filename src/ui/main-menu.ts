@@ -1,4 +1,3 @@
-import clear from 'clear';
 import inquirer, { ListQuestion } from 'inquirer';
 import { CoreProvider } from '../services/state/CoreProvider';
 import { displayLogo, exit, line, logout, waitFor } from '../utils/general';
@@ -7,6 +6,7 @@ import { chatMenuView } from './chat/chat-menu';
 import { loginView } from './login';
 import { registerView } from './register';
 import { settingsView } from './settings/settings';
+
 
 const choiceManager = () => {
 	const { isLoggedIn } = CoreProvider.instance;
@@ -43,9 +43,9 @@ export const mainMenu = async () => {
 	if (!CoreProvider.instance.isLoggedIn) {
 		await attemptAutoLogin();
 	}
-	clear();
 	displayLogo();
 	await waitFor(0.2);
+
 	const { destination } = await inquirer.prompt<{ destination: string }>([
 		mainMenuList()
 	]);
